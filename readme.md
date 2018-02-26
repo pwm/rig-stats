@@ -2,7 +2,9 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Nvidia GPU and miner statistics exporter for prometheus.io
+Nvidia GPU and miner statistics exporter for prometheus.io.
+
+It is useful in combination with Grafana. Included a sample dashboard [here](grafana-dashboard-sample.json).
 
 ## Table of Contents
 
@@ -70,7 +72,7 @@ Full help:
 
 ## How it works
 
-The program uses the python 3 bindings for the NVIDIA Management Library (NVML) to query GPU telemetry data, eg. clock speed or power usage. If the optional miner argument are set then it will also include miner telemetry data, eg. hashrate or efficiency.
+The program uses the python 3 bindings for the NVIDIA Management Library (NVML) to query GPU telemetry data, eg. clock speed or power usage. If the optional miner arguments are set then it will also include miner telemetry data, eg. hashrate or efficiency.
 
 It runs as an http server using Prometheus' own client library, which makes it east for Prometheus to poll it.
 
