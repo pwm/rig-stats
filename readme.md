@@ -32,6 +32,21 @@ Supported miners (optional):
 
 ## Usage
 
+Simple usage (runs on default port 9001):
+
+    $ python3 rig_stats.py
+
+With custom port and miner:
+
+	$ python3 rig_stats.py -p 9003 -m dtsm -H 127.0.0.1 -P 2222
+
+It is recommended to run it in a screen ot tmux session, eg.:
+
+	$ screen -S rig-stats
+	$ python3 rig_stats.py -m dtsm -H 127.0.0.1 -P 2222
+
+Full help:
+
     $ python3 rig_stats.py -h
     usage: rig_stats.py [-h] [-p <port>] [-m <name>] [-H <host>] [-P <port>]
     
