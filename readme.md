@@ -8,7 +8,7 @@ It is useful in combination with Grafana. Included a sample dashboard [here](gra
 
 The goal is to create dashboards like this:
 
-![](https://cdn.rawgit.com/pwm/rig-stats/master/grafana-dashboard-sample.png)
+[[https://github.com/pwm/rig-stats/blob/master/grafana-dashboard-sample.png|alt="Grafana dashboard sample"]]
 
 ## Table of Contents
 
