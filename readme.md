@@ -8,7 +8,7 @@ It is useful in combination with Grafana. Included a sample dashboard [here](gra
 
 The goal is to create dashboards like this:
 
-[[https://github.com/pwm/rig-stats/blob/master/grafana-dashboard-sample.png|alt="Grafana dashboard sample"]]
+[[https://github.com/pwm/rig-stats/blob/master/grafana-dashboard-sample.png]]
 
 ## Table of Contents
 
