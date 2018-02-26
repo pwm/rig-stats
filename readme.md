@@ -6,6 +6,10 @@ Nvidia GPU and miner statistics exporter for prometheus.io.
 
 It is useful in combination with Grafana. Included a sample dashboard [here](grafana-dashboard-sample.json).
 
+The goal is to create dashboards like this:
+
+![](https://cdn.rawgit.com/pwm/rig-stats/master/grafana-dashboard-sample.png)
+
 ## Table of Contents
 
 * [Requirements](#requirements)
