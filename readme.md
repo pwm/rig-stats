@@ -26,8 +26,8 @@ Supported miners (optional):
 
 ## Installation
 
-    $ git clone git@github.com:pwm/rig_stats.git
-    $ cd rig_stats
+    $ git clone git@github.com:pwm/rig-stats.git
+    $ cd rig-stats
     $ pip3 install -r requirements.txt
 
 ## Usage
