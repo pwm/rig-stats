@@ -28,7 +28,7 @@ Re NVML, if the `nvidia-smi` command is available then you're good to go.
 
 Supported miners (optional):
 
-* DTSM
+* DSTM
 
 ## Installation
 
@@ -44,12 +44,12 @@ Simple usage (runs on default port 9001):
 
 With custom port and miner:
 
-	$ python3 rig_stats.py -p 9003 -m dtsm -H 127.0.0.1 -P 2222
+	$ python3 rig_stats.py -p 9003 -m dstm -H 127.0.0.1 -P 2222
 
 It is recommended to run it in a screen ot tmux session, eg.:
 
 	$ screen -S rig-stats
-	$ python3 rig_stats.py -m dtsm -H 127.0.0.1 -P 2222
+	$ python3 rig_stats.py -m dstm -H 127.0.0.1 -P 2222
 
 Full help:
 
@@ -68,7 +68,7 @@ Full help:
       -m <name>, --miner <name>
                             The miner software, in case miner stats are to be collected.
                             Currently supported:
-                              - dtsm
+                              - dstm
       -H <host>, --miner-api-host <host>
                             Miner API host
       -P <port>, --miner-api-port <port>

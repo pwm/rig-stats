@@ -69,7 +69,7 @@ class NvidiaCollector(object):
         yield fan_speed
 
 
-class DTSMCollector(object):
+class DSTMCollector(object):
     def __init__(self, host: str, port: int):
         self.host = host
         self.port = port
@@ -81,7 +81,7 @@ class DTSMCollector(object):
         latency = GaugeMetricFamily('miner_latency', 'Latency', labels=['gpu_id'])
         uptime = GaugeMetricFamily('miner_uptime', 'Uptime', labels=['type'])
 
-        miner_data = DTSMCollector.query_miner(self.host, self.port)
+        miner_data = DSTMCollector.query_miner(self.host, self.port)
 
         uptime.add_metric(['miner'], miner_data['uptime'])
         uptime.add_metric(['connection'], miner_data['contime'])
@@ -134,11 +134,11 @@ def parse_args() -> Dict:
         '-m', '--miner',
         metavar='<name>',
         required=False,
-        choices=['dtsm'],
+        choices=['dstm'],
         help=textwrap.dedent('''\
             The miner software, in case miner stats are to be collected.
             Currently supported:
-              - dtsm'''))
+              - dstm'''))
     miner_parser.add_argument(
         '-H', '--miner-api-host',
         metavar='<host>',
@@ -160,7 +160,7 @@ def parse_args() -> Dict:
 
 def miner_collectors() -> Dict:
     return {
-        'dtsm': DTSMCollector
+        'dstm': DSTMCollector
     }
 
 
