@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Nvidia GPU and miner statistics exporter for prometheus.io.
+Nvidia GPU, pool and miner statistics exporter for prometheus.io.
 
 It is useful in combination with Grafana. Included a sample dashboard [here](grafana-dashboard-sample.json).
 
@@ -22,9 +22,11 @@ The goal is to create dashboards like this:
 ## Requirements
 
 * Python 3
-* NVIDIA Management Library (NVML)
+* [NVIDIA Management Library (NVML)](https://developer.nvidia.com/cuda-downloads)
 
-Re NVML, if the `nvidia-smi` command is available then you're good to go.
+Supported pools (optional):
+
+* Flypool
 
 Supported miners (optional):
 
@@ -40,43 +42,62 @@ Supported miners (optional):
 
 Simple usage (runs on default port 9001):
 
-    $ python3 rig_stats.py
+    $ ./rig_stats.py
 
-With custom port and miner:
+With pool:
 
-	$ python3 rig_stats.py -p 9003 -m dstm -H 127.0.0.1 -P 2222
+	$ ./rig_stats.py -o flypool -O api-zcash.flypool.org -u <your_zcash_address>
+
+With pool, custom port and miner:
+
+	$ ./rig_stats.py -p 9003 -o flypool -O api-zcash.flypool.org -u <your_zcash_address> -m dstm -H 127.0.0.1 -P 2222
 
 It is recommended to run it in a screen ot tmux session, eg.:
 
 	$ screen -S rig-stats
-	$ python3 rig_stats.py -m dstm -H 127.0.0.1 -P 2222
+	$ ./rig_stats.py
 
 Full help:
 
-    $ python3 rig_stats.py -h
-    usage: rig_stats.py [-h] [-p <port>] [-m <name>] [-H <host>] [-P <port>]
-    
-    GPU and miner statistic exporter
-    
-    optional arguments:
-      -h, --help            show this help message and exit
-      -p <port>, --port <port>
-                            The port the exporter listens on for Prometheus queries.
-                            Default: 9001
-    
-    Miner related arguments:
-      -m <name>, --miner <name>
-                            The miner software, in case miner stats are to be collected.
-                            Currently supported:
-                              - dstm
-      -H <host>, --miner-api-host <host>
-                            Miner API host
-      -P <port>, --miner-api-port <port>
-                            Miner API port
+    $ ./rig_stats.py -h
+	usage: rig_stats.py [-h] [-p <port>] [-o <name>] [-O <host>] [-u <miner>]
+	                    [-m <name>] [-H <host>] [-P <port>]
+	
+	Nvidia GPU, miner and pool statistics exporter for prometheus.io
+	
+	optional arguments:
+	  -h, --help            show this help message and exit
+	  -p <port>, --port <port>
+	                        The port the exporter listens on for Prometheus queries.
+	                        Default: 9001
+	
+	Pool related arguments:
+	  -o <name>, --pool <name>
+	                        The pool name, in case pool stats are to be collected.
+	                        Currently supported:
+	                          - flypool
+	  -O <host>, --pool-api-host <host>
+	                        Pool API host
+	  -u <miner>, --pool-api-miner <miner>
+	                        Pool API miner
+	
+	Miner related arguments:
+	  -m <name>, --miner <name>
+	                        The miner software, in case miner stats are to be collected.
+	                        Currently supported:
+	                          - dstm
+	  -H <host>, --miner-api-host <host>
+	                        Miner API host
+	  -P <port>, --miner-api-port <port>
+	                        Miner API port
 
 ## How it works
 
-The program uses the python 3 bindings for the NVIDIA Management Library (NVML) to query GPU telemetry data, eg. clock speed or power usage. If the optional miner arguments are set then it will also include miner telemetry data, eg. hashrate or efficiency.
+The program uses the python 3 bindings for the NVIDIA Management Library (NVML) to query GPU telemetry data, eg. clock speed or power usage. 
+
+If the optional pool arguments are set then it will include pool statistics, eg. pool hashrate or earnings.
+
+If the optional miner arguments are set then it will include miner telemetry data, eg. hashrate or efficiency.
 
 It runs as an http server using Prometheus' own client library, which makes it east for Prometheus to poll it.
 
