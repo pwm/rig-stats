@@ -15,6 +15,14 @@ import urllib3
 
 
 class NvidiaCollector(object):
+
+    @staticmethod
+    def call(fn, handle, arg=None):
+        try:
+            return getattr(nvml, fn)(handle) if arg is None else getattr(nvml, fn)(handle, arg)
+        except nvml.NVMLError:
+            return 0
+
     @staticmethod
     def collect() -> Generator:
         gpu_utilization = GaugeMetricFamily('nvidia_gpu_utilization', 'GPU Utilization', labels=['gpu_id', 'type'])
@@ -29,35 +37,35 @@ class NvidiaCollector(object):
         for (i, handle) in gpu_handles:
             gpu_id = nvml.nvmlDeviceGetUUID(handle)
             # GPU Utilization
-            nvml_gpu_utilization = nvml.nvmlDeviceGetUtilizationRates(handle)
+            nvml_gpu_utilization = NvidiaCollector.call('nvmlDeviceGetUtilizationRates', handle)
             gpu_utilization.add_metric([gpu_id, 'gpu'], nvml_gpu_utilization.gpu)
             gpu_utilization.add_metric([gpu_id, 'memory'], nvml_gpu_utilization.memory)
             # Clock Speed
-            clock_speed.add_metric([gpu_id, 'core'], nvml.nvmlDeviceGetClockInfo(handle, nvml.NVML_CLOCK_COUNT))
-            clock_speed.add_metric([gpu_id, 'memory'], nvml.nvmlDeviceGetClockInfo(handle, nvml.NVML_CLOCK_MEM))
-            clock_speed.add_metric([gpu_id, 'max_core'], nvml.nvmlDeviceGetMaxClockInfo(handle, nvml.NVML_CLOCK_COUNT))
-            clock_speed.add_metric([gpu_id, 'max_memory'], nvml.nvmlDeviceGetMaxClockInfo(handle, nvml.NVML_CLOCK_MEM))
+            clock_speed.add_metric([gpu_id, 'core'], NvidiaCollector.call('nvmlDeviceGetClockInfo', handle, nvml.NVML_CLOCK_COUNT))
+            clock_speed.add_metric([gpu_id, 'memory'], NvidiaCollector.call('nvmlDeviceGetClockInfo', handle, nvml.NVML_CLOCK_MEM))
+            clock_speed.add_metric([gpu_id, 'max_core'], NvidiaCollector.call('nvmlDeviceGetMaxClockInfo', handle, nvml.NVML_CLOCK_COUNT))
+            clock_speed.add_metric([gpu_id, 'max_memory'], NvidiaCollector.call('nvmlDeviceGetMaxClockInfo', handle, nvml.NVML_CLOCK_MEM))
             # Power Usage
-            power_usage.add_metric([gpu_id, 'usage'], nvml.nvmlDeviceGetPowerUsage(handle))
-            power_usage.add_metric([gpu_id, 'min_limit'], nvml.nvmlDeviceGetPowerManagementLimitConstraints(handle)[0])
-            power_usage.add_metric([gpu_id, 'max_limit'], nvml.nvmlDeviceGetPowerManagementLimitConstraints(handle)[1])
-            power_usage.add_metric([gpu_id, 'limit'], nvml.nvmlDeviceGetPowerManagementLimit(handle))
-            power_usage.add_metric([gpu_id, 'default_limit'], nvml.nvmlDeviceGetPowerManagementDefaultLimit(handle))
-            power_usage.add_metric([gpu_id, 'enforced_limit'], nvml.nvmlDeviceGetEnforcedPowerLimit(handle))
+            power_usage.add_metric([gpu_id, 'usage'], NvidiaCollector.call('nvmlDeviceGetPowerUsage', handle))
+            power_usage.add_metric([gpu_id, 'min_limit'], NvidiaCollector.call('nvmlDeviceGetPowerManagementLimitConstraints', handle)[0])
+            power_usage.add_metric([gpu_id, 'max_limit'], NvidiaCollector.call('nvmlDeviceGetPowerManagementLimitConstraints', handle)[1])
+            power_usage.add_metric([gpu_id, 'limit'], NvidiaCollector.call('nvmlDeviceGetPowerManagementLimit', handle))
+            power_usage.add_metric([gpu_id, 'default_limit'], NvidiaCollector.call('nvmlDeviceGetPowerManagementDefaultLimit', handle))
+            power_usage.add_metric([gpu_id, 'enforced_limit'], NvidiaCollector.call('nvmlDeviceGetEnforcedPowerLimit', handle))
             # Memory Usage
-            nvml_memory_usage = nvml.nvmlDeviceGetMemoryInfo(handle)
+            nvml_memory_usage = NvidiaCollector.call('nvmlDeviceGetMemoryInfo', handle)
             memory_usage.add_metric([gpu_id, 'used'], nvml_memory_usage.used)
             memory_usage.add_metric([gpu_id, 'free'], nvml_memory_usage.free)
             memory_usage.add_metric([gpu_id, 'total'], nvml_memory_usage.total)
             # BAR1 Memory Usage
-            nvml_bar1_memory_usage = nvml.nvmlDeviceGetBAR1MemoryInfo(handle)
+            nvml_bar1_memory_usage = NvidiaCollector.call('nvmlDeviceGetBAR1MemoryInfo', handle)
             bar1_memory_usage.add_metric([gpu_id, 'used'], nvml_bar1_memory_usage.bar1Used)
             bar1_memory_usage.add_metric([gpu_id, 'free'], nvml_bar1_memory_usage.bar1Free)
             bar1_memory_usage.add_metric([gpu_id, 'total'], nvml_bar1_memory_usage.bar1Total)
             # Temperature
-            temperature.add_metric([gpu_id, 'current'], nvml.nvmlDeviceGetTemperature(handle, nvml.NVML_TEMPERATURE_GPU))
-            temperature.add_metric([gpu_id, 'slowdown_threshold'], nvml.nvmlDeviceGetTemperatureThreshold(handle, nvml.NVML_TEMPERATURE_THRESHOLD_SLOWDOWN))
-            temperature.add_metric([gpu_id, 'shutdown_threshold'], nvml.nvmlDeviceGetTemperatureThreshold(handle, nvml.NVML_TEMPERATURE_THRESHOLD_SHUTDOWN))
+            temperature.add_metric([gpu_id, 'current'], NvidiaCollector.call('nvmlDeviceGetTemperature', handle, nvml.NVML_TEMPERATURE_GPU))
+            temperature.add_metric([gpu_id, 'slowdown_threshold'], NvidiaCollector.call('nvmlDeviceGetTemperatureThreshold', handle, nvml.NVML_TEMPERATURE_THRESHOLD_SLOWDOWN))
+            temperature.add_metric([gpu_id, 'shutdown_threshold'], NvidiaCollector.call('nvmlDeviceGetTemperatureThreshold', handle, nvml.NVML_TEMPERATURE_THRESHOLD_SHUTDOWN))
             # Fan Speed
             fan_speed.add_metric([gpu_id], nvml.nvmlDeviceGetFanSpeed(handle))
 
