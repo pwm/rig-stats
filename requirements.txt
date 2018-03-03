@@ -1,2 +1,3 @@
 prometheus-client>=0.1.1
 py3nvml>=0.1.0rc7
+urllib3>=1.13.1

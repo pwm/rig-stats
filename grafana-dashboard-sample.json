@@ -358,7 +358,7 @@
               "show": true
             },
             {
-              "format": "short",
+              "format": "none",
               "label": null,
               "logBase": 1,
               "max": null,
@@ -691,6 +691,703 @@
     },
     {
       "collapse": false,
+      "height": "200",
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_RIG}",
+          "fill": 0,
+          "id": 24,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": false,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 4,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "pool_hashrate{type=\"current\"}",
+              "format": "time_series",
+              "intervalFactor": 1,
+              "legendFormat": "Current",
+              "refId": "A"
+            },
+            {
+              "expr": "pool_hashrate{type=\"average\"}",
+              "format": "time_series",
+              "intervalFactor": 1,
+              "legendFormat": "Average",
+              "refId": "B"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Pool Hashrate",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "transparent": true,
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "none",
+              "label": "Sol/s",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_RIG}",
+          "fill": 0,
+          "id": 25,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 4,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "sum(max_over_time(pool_shares{type=\"valid\"}[1h]) - min_over_time(pool_shares{type=\"valid\"}[1h]))",
+              "format": "time_series",
+              "intervalFactor": 1,
+              "legendFormat": "Valid",
+              "refId": "A"
+            },
+            {
+              "expr": "sum(max_over_time(pool_shares{type=\"invalid\"}[1h]) - min_over_time(pool_shares{type=\"invalid\"}[1h]))",
+              "format": "time_series",
+              "intervalFactor": 1,
+              "legendFormat": "Invalid",
+              "refId": "B"
+            },
+            {
+              "expr": "sum(max_over_time(pool_shares{type=\"stale\"}[1h]) - min_over_time(pool_shares{type=\"stale\"}[1h]))",
+              "format": "time_series",
+              "intervalFactor": 1,
+              "legendFormat": "Stale",
+              "refId": "C"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Pool Shares",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "transparent": true,
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "decimals": null,
+              "format": "none",
+              "label": "Shares",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_RIG}",
+          "fill": 0,
+          "id": 26,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 4,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "pool_earnings{type=\"unpaid\"} / 1000 / 1000 / 100",
+              "format": "time_series",
+              "intervalFactor": 1,
+              "legendFormat": "Unpaid",
+              "refId": "A"
+            },
+            {
+              "expr": "pool_earnings{type=\"unconfirmed\"} / 1000 / 1000 / 100",
+              "format": "time_series",
+              "intervalFactor": 1,
+              "legendFormat": "Unconfirmed",
+              "refId": "B"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Pool Earnings",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "transparent": true,
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "none",
+              "label": "ZEC",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        }
+      ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
+      "showTitle": false,
+      "title": "Dashboard Row",
+      "titleSize": "h6"
+    },
+    {
+      "collapse": false,
+      "height": "180",
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_RIG}",
+          "fill": 0,
+          "id": 27,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": false,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 4,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "pool_earnings{type=\"coins_per_min\"}",
+              "format": "time_series",
+              "intervalFactor": 1,
+              "legendFormat": "ZEC/m",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "ZEC per min",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "transparent": true,
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "decimals": null,
+              "format": "none",
+              "label": "ZEC/m",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_RIG}",
+          "fill": 0,
+          "id": 28,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": false,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 4,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "pool_earnings{type=\"btc_per_min\"} * 1000 * 1000 * 100",
+              "format": "time_series",
+              "intervalFactor": 1,
+              "legendFormat": "Sat/m",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Sat per min",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "transparent": true,
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "decimals": null,
+              "format": "none",
+              "label": "Sat/m",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_RIG}",
+          "fill": 0,
+          "id": 29,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": false,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 4,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "pool_earnings{type=\"usd_per_min\"}",
+              "format": "time_series",
+              "intervalFactor": 1,
+              "legendFormat": "USD/m",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "USD per min",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "transparent": true,
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "decimals": null,
+              "format": "none",
+              "label": "USD/m",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ]
+        }
+      ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
+      "showTitle": false,
+      "title": "Dashboard Row",
+      "titleSize": "h6"
+    },
+    {
+      "collapse": false,
+      "height": "180",
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_RIG}",
+          "fill": 0,
+          "id": 9,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "sort": "avg",
+            "sortDesc": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "label_replace(nvidia_temperature{type=\"current\"}, \"gpu_short_id\", \"$1\", \"gpu_id\", \".*-.{8}(.{4})\")",
+              "format": "time_series",
+              "intervalFactor": 5,
+              "legendFormat": "{{gpu_short_id}}",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Temperature",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "transparent": true,
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "decimals": 0,
+              "format": "celsius",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": false
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_RIG}",
+          "fill": 0,
+          "id": 7,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "sort": "avg",
+            "sortDesc": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "label_replace(nvidia_fan_speed, \"gpu_short_id\", \"$1\", \"gpu_id\", \".*-.{8}(.{4})\")",
+              "format": "time_series",
+              "hide": false,
+              "intervalFactor": 2,
+              "legendFormat": "{{gpu_short_id}}",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Fan Speed",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "transparent": true,
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "decimals": 0,
+              "format": "percent",
+              "label": "",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": false
+            }
+          ]
+        }
+      ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
+      "showTitle": false,
+      "title": "Dashboard Row",
+      "titleSize": "h6"
+    },
+    {
+      "collapse": false,
       "height": "180",
       "panels": [
         {
@@ -709,6 +1406,8 @@
             "min": true,
             "rightSide": true,
             "show": true,
+            "sort": "avg",
+            "sortDesc": true,
             "total": false,
             "values": true
           },
@@ -727,11 +1426,11 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "miner_hashrate{type=\"current\"}",
+              "expr": "label_replace(miner_hashrate{type=\"current\"}, \"gpu_short_id\", \"$1\", \"gpu_id\", \".*-.{8}(.{4})\")",
               "format": "time_series",
               "hide": false,
               "intervalFactor": 10,
-              "legendFormat": "1080 Ti",
+              "legendFormat": "{{gpu_short_id}}",
               "refId": "A"
             }
           ],
@@ -789,6 +1488,8 @@
             "min": true,
             "rightSide": true,
             "show": true,
+            "sort": "avg",
+            "sortDesc": true,
             "total": false,
             "values": true
           },
@@ -807,11 +1508,11 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "miner_efficiency{type=\"current\"}",
+              "expr": "label_replace(miner_efficiency{type=\"current\"}, \"gpu_short_id\", \"$1\", \"gpu_id\", \".*-.{8}(.{4})\")",
               "format": "time_series",
               "hide": false,
               "intervalFactor": 10,
-              "legendFormat": "1080 Ti",
+              "legendFormat": "{{gpu_short_id}}",
               "refId": "A"
             }
           ],
@@ -881,6 +1582,8 @@
             "min": true,
             "rightSide": true,
             "show": true,
+            "sort": "avg",
+            "sortDesc": true,
             "total": false,
             "values": true
           },
@@ -899,11 +1602,11 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "nvidia_clock_speed{type=\"core\"}",
+              "expr": "label_replace(nvidia_clock_speed{type=\"core\"}, \"gpu_short_id\", \"$1\", \"gpu_id\", \".*-.{8}(.{4})\")",
               "format": "time_series",
               "hide": false,
               "intervalFactor": 5,
-              "legendFormat": "1080 Ti",
+              "legendFormat": "{{gpu_short_id}}",
               "refId": "A"
             }
           ],
@@ -961,6 +1664,8 @@
             "min": true,
             "rightSide": true,
             "show": true,
+            "sort": "avg",
+            "sortDesc": true,
             "total": false,
             "values": true
           },
@@ -979,11 +1684,11 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "nvidia_power_usage{type=\"usage\"} / 1000",
+              "expr": "label_replace(nvidia_power_usage{type=\"usage\"}, \"gpu_short_id\", \"$1\", \"gpu_id\", \".*-.{8}(.{4})\") / 1000",
               "format": "time_series",
               "hide": false,
               "intervalFactor": 10,
-              "legendFormat": "1080 Ti",
+              "legendFormat": "{{gpu_short_id}}",
               "refId": "A"
             }
           ],
@@ -1043,7 +1748,7 @@
           "dashes": false,
           "datasource": "${DS_RIG}",
           "fill": 0,
-          "id": 9,
+          "id": 14,
           "legend": {
             "alignAsTable": true,
             "avg": true,
@@ -1052,6 +1757,8 @@
             "min": true,
             "rightSide": true,
             "show": true,
+            "sort": "avg",
+            "sortDesc": true,
             "total": false,
             "values": true
           },
@@ -1070,17 +1777,18 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "nvidia_temperature{type=\"current\"}",
+              "expr": "label_replace(miner_latency, \"gpu_short_id\", \"$1\", \"gpu_id\", \".*-.{8}(.{4})\")",
               "format": "time_series",
-              "intervalFactor": 5,
-              "legendFormat": "1080 Ti",
+              "hide": false,
+              "intervalFactor": 4,
+              "legendFormat": "{{gpu_short_id}}",
               "refId": "A"
             }
           ],
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Temperature",
+          "title": "Network Latency",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -1097,9 +1805,8 @@
           },
           "yaxes": [
             {
-              "decimals": 0,
-              "format": "celsius",
-              "label": null,
+              "format": "ms",
+              "label": "",
               "logBase": 1,
               "max": null,
               "min": null,
@@ -1122,98 +1829,6 @@
           "dashes": false,
           "datasource": "${DS_RIG}",
           "fill": 0,
-          "id": 7,
-          "legend": {
-            "alignAsTable": true,
-            "avg": true,
-            "current": true,
-            "max": true,
-            "min": true,
-            "rightSide": true,
-            "show": true,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 1,
-          "links": [],
-          "nullPointMode": "null",
-          "percentage": false,
-          "pointradius": 5,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "span": 6,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "nvidia_fan_speed",
-              "format": "time_series",
-              "hide": false,
-              "intervalFactor": 2,
-              "legendFormat": "1080 Ti",
-              "refId": "A"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "Fan Speed",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "transparent": true,
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "decimals": 0,
-              "format": "percent",
-              "label": "",
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": false
-            }
-          ]
-        }
-      ],
-      "repeat": null,
-      "repeatIteration": null,
-      "repeatRowId": null,
-      "showTitle": false,
-      "title": "Dashboard Row",
-      "titleSize": "h6"
-    },
-    {
-      "collapse": false,
-      "height": "180",
-      "panels": [
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "${DS_RIG}",
-          "fill": 0,
           "id": 1,
           "legend": {
             "alignAsTable": true,
@@ -1223,6 +1838,8 @@
             "min": true,
             "rightSide": true,
             "show": true,
+            "sort": "avg",
+            "sortDesc": true,
             "total": false,
             "values": true
           },
@@ -1241,11 +1858,11 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "nvidia_gpu_utilization{type=\"gpu\"}",
+              "expr": "label_replace(nvidia_gpu_utilization{type=\"gpu\"}, \"gpu_short_id\", \"$1\", \"gpu_id\", \".*-.{8}(.{4})\")",
               "format": "time_series",
               "hide": false,
               "intervalFactor": 10,
-              "legendFormat": "1080 Ti",
+              "legendFormat": "{{gpu_short_id}}",
               "refId": "A"
             }
           ],
@@ -1285,7 +1902,19 @@
               "show": false
             }
           ]
-        },
+        }
+      ],
+      "repeat": null,
+      "repeatIteration": null,
+      "repeatRowId": null,
+      "showTitle": false,
+      "title": "Dashboard Row",
+      "titleSize": "h6"
+    },
+    {
+      "collapse": false,
+      "height": "180",
+      "panels": [
         {
           "aliasColors": {},
           "bars": false,
@@ -1293,7 +1922,7 @@
           "dashes": false,
           "datasource": "${DS_RIG}",
           "fill": 0,
-          "id": 2,
+          "id": 4,
           "legend": {
             "alignAsTable": true,
             "avg": true,
@@ -1302,6 +1931,8 @@
             "min": true,
             "rightSide": true,
             "show": true,
+            "sort": "avg",
+            "sortDesc": true,
             "total": false,
             "values": true
           },
@@ -1320,11 +1951,92 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "nvidia_gpu_utilization{type=\"memory\"}",
+              "expr": "label_replace(nvidia_clock_speed{type=\"memory\"}, \"gpu_short_id\", \"$1\", \"gpu_id\", \".*-.{8}(.{4})\")",
               "format": "time_series",
               "hide": false,
               "intervalFactor": 10,
-              "legendFormat": "1080 Ti",
+              "legendFormat": "{{gpu_short_id}}",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeShift": null,
+          "title": "Memory Clock Speed",
+          "tooltip": {
+            "shared": true,
+            "sort": 0,
+            "value_type": "individual"
+          },
+          "transparent": true,
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "format": "none",
+              "label": "MHz",
+              "logBase": 1,
+              "max": "6000",
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": null,
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": false
+            }
+          ]
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_RIG}",
+          "fill": 0,
+          "id": 2,
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "sort": "avg",
+            "sortDesc": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "percentage": false,
+          "pointradius": 5,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "span": 6,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "label_replace(nvidia_gpu_utilization{type=\"memory\"}, \"gpu_short_id\", \"$1\", \"gpu_id\", \".*-.{8}(.{4})\")",
+              "format": "time_series",
+              "hide": false,
+              "intervalFactor": 10,
+              "legendFormat": "{{gpu_short_id}}",
               "refId": "A"
             }
           ],
@@ -1385,85 +2097,6 @@
           "dashes": false,
           "datasource": "${DS_RIG}",
           "fill": 0,
-          "id": 4,
-          "legend": {
-            "alignAsTable": true,
-            "avg": true,
-            "current": true,
-            "max": true,
-            "min": true,
-            "rightSide": true,
-            "show": true,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 1,
-          "links": [],
-          "nullPointMode": "null",
-          "percentage": false,
-          "pointradius": 5,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "span": 6,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "nvidia_clock_speed{type=\"memory\"}",
-              "format": "time_series",
-              "hide": false,
-              "intervalFactor": 10,
-              "legendFormat": "1080 Ti",
-              "refId": "A"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "Memory Clock Speed",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "transparent": true,
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "none",
-              "label": "MHz",
-              "logBase": 1,
-              "max": "6000",
-              "min": "0",
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": false
-            }
-          ]
-        },
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "${DS_RIG}",
-          "fill": 0,
           "id": 6,
           "legend": {
             "alignAsTable": true,
@@ -1473,6 +2106,8 @@
             "min": true,
             "rightSide": true,
             "show": true,
+            "sort": "avg",
+            "sortDesc": true,
             "total": false,
             "values": true
           },
@@ -1491,11 +2126,11 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "nvidia_memory_usage{type=\"used\"} / 1024 / 1024",
+              "expr": "label_replace(nvidia_memory_usage{type=\"used\"}, \"gpu_short_id\", \"$1\", \"gpu_id\", \".*-.{8}(.{4})\") / 1024 / 1024",
               "format": "time_series",
               "hide": false,
               "intervalFactor": 10,
-              "legendFormat": "1080 Ti",
+              "legendFormat": "{{gpu_short_id}}",
               "refId": "A"
             }
           ],
@@ -1535,97 +2170,6 @@
               "show": false
             }
           ]
-        }
-      ],
-      "repeat": null,
-      "repeatIteration": null,
-      "repeatRowId": null,
-      "showTitle": false,
-      "title": "Dashboard Row",
-      "titleSize": "h6"
-    },
-    {
-      "collapse": false,
-      "height": "180",
-      "panels": [
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "${DS_RIG}",
-          "fill": 0,
-          "id": 14,
-          "legend": {
-            "alignAsTable": true,
-            "avg": false,
-            "current": false,
-            "max": false,
-            "min": false,
-            "rightSide": true,
-            "show": true,
-            "total": false,
-            "values": false
-          },
-          "lines": true,
-          "linewidth": 1,
-          "links": [],
-          "nullPointMode": "null",
-          "percentage": false,
-          "pointradius": 5,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "span": 6,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "miner_latency{type=\"\"}",
-              "format": "time_series",
-              "hide": false,
-              "intervalFactor": 4,
-              "legendFormat": "1080 Ti",
-              "refId": "A"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeShift": null,
-          "title": "Latency",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "transparent": true,
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "none",
-              "label": "Latency",
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": false
-            }
-          ]
         },
         {
           "aliasColors": {},
@@ -1644,6 +2188,8 @@
             "min": true,
             "rightSide": true,
             "show": true,
+            "sort": "avg",
+            "sortDesc": true,
             "total": false,
             "values": true
           },
@@ -1662,11 +2208,11 @@
           "steppedLine": false,
           "targets": [
             {
-              "expr": "nvidia_bar1_memory_usage{type=\"used\"} / 1024 / 1024",
+              "expr": "label_replace(nvidia_bar1_memory_usage{type=\"used\"}, \"gpu_short_id\", \"$1\", \"gpu_id\", \".*-.{8}(.{4})\") / 1024 / 1024",
               "format": "time_series",
               "hide": false,
               "intervalFactor": 10,
-              "legendFormat": "1080 Ti",
+              "legendFormat": "{{gpu_short_id}}",
               "refId": "A"
             }
           ],
@@ -1755,5 +2301,5 @@
   },
   "timezone": "",
   "title": "Rig Stats",
-  "version": 36
+  "version": 48
 }

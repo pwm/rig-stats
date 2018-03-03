@@ -11,6 +11,7 @@ from sys import exit
 import textwrap
 import time
 from typing import Dict, Generator
+import urllib3
 
 
 class NvidiaCollector(object):
@@ -69,6 +70,41 @@ class NvidiaCollector(object):
         yield fan_speed
 
 
+class FlyPoolCollector(object):
+    def __init__(self, host: str, miner: str):
+        self.host = host
+        self.miner = miner
+        self.data = {}
+
+    def collect(self) -> Generator:
+        hashrate = GaugeMetricFamily('pool_hashrate', 'Hashrate', labels=['type'])
+        shares = GaugeMetricFamily('pool_shares', 'Hashrate', labels=['type'])
+        earnings = GaugeMetricFamily('pool_earnings', 'Hashrate', labels=['type'])
+
+        hashrate.add_metric(['current'], self.data['data']['currentHashrate'])
+        hashrate.add_metric(['average'], self.data['data']['averageHashrate'])
+        shares.add_metric(['valid'], self.data['data']['validShares'])
+        shares.add_metric(['invalid'], self.data['data']['invalidShares'])
+        shares.add_metric(['stale'], self.data['data']['staleShares'])
+        earnings.add_metric(['unconfirmed'], self.data['data']['unconfirmed'])
+        earnings.add_metric(['unpaid'], self.data['data']['unpaid'])
+        earnings.add_metric(['coins_per_min'], self.data['data']['coinsPerMin'])
+        earnings.add_metric(['btc_per_min'], self.data['data']['btcPerMin'])
+        earnings.add_metric(['usd_per_min'], self.data['data']['usdPerMin'])
+
+        yield hashrate
+        yield shares
+        yield earnings
+
+    def query_pool(self):
+        url = "https://{host}/miner/{miner}/currentStats".format(host=self.host, miner=self.miner)
+        try:
+            rsp = urllib3.PoolManager().request('GET', url, retries=False)
+            self.data = json.loads(rsp.data.decode('utf-8'))
+        except Exception:
+            pass
+
+
 class DSTMCollector(object):
     def __init__(self, host: str, port: int):
         self.host = host
@@ -87,16 +123,12 @@ class DSTMCollector(object):
         uptime.add_metric(['connection'], miner_data['contime'])
         for gpu in miner_data['result']:
             gpu_id = gpu['gpu_uuid']
-            # Hashrate
             hashrate.add_metric([gpu_id, 'current'], gpu['sol_ps'])
             hashrate.add_metric([gpu_id, 'average'], gpu['avg_sol_ps'])
-            # Efficiency
             efficiency.add_metric([gpu_id, 'current'], gpu['sol_pw'])
             efficiency.add_metric([gpu_id, 'average'], gpu['avg_sol_pw'])
-            # Pool Shares
             pool_shares.add_metric([gpu_id, 'accepted'], gpu['accepted_shares'])
             pool_shares.add_metric([gpu_id, 'rejected'], gpu['rejected_shares'])
-            # Latency
             latency.add_metric([gpu_id], gpu['latency'])
 
         yield uptime
@@ -110,15 +142,17 @@ class DSTMCollector(object):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.connect((host, port))
             s.sendall(b'{"id": 1, "method": "getstat"}')
-            rsp = s.recv(8192)
-        return json.loads(rsp.decode('utf8').rstrip())
+            rsp = s.recv(8192)  # todo: handle when rsp is larger
+        return json.loads(rsp.decode('utf-8').rstrip())
 
 
 def parse_args() -> Dict:
     parser = argparse.ArgumentParser(
-        description='Nvidia GPU and miner statistics exporter for prometheus.io',
+        description='Nvidia GPU, miner and pool statistics exporter for prometheus.io',
         allow_abbrev=False,
         formatter_class=argparse.RawTextHelpFormatter)
+
+    pool_parser = parser.add_argument_group('Pool related arguments')
     miner_parser = parser.add_argument_group('Miner related arguments')
 
     parser.add_argument(
@@ -130,6 +164,19 @@ def parse_args() -> Dict:
         help=textwrap.dedent('''\
             The port the exporter listens on for Prometheus queries.
             Default: 9001'''))
+
+    pool_parser.add_argument(
+        '-o', '--pool',
+        metavar='<name>',
+        required=False,
+        choices=['flypool'],
+        help=textwrap.dedent('''\
+            The pool name, in case pool stats are to be collected.
+            Currently supported:
+              - flypool'''))
+    pool_parser.add_argument('-O', '--pool-api-host', metavar='<host>', required=False, help='Pool API host')
+    pool_parser.add_argument('-u', '--pool-api-miner', metavar='<miner>', required=False, help='Pool API miner')
+
     miner_parser.add_argument(
         '-m', '--miner',
         metavar='<name>',
@@ -139,23 +186,23 @@ def parse_args() -> Dict:
             The miner software, in case miner stats are to be collected.
             Currently supported:
               - dstm'''))
-    miner_parser.add_argument(
-        '-H', '--miner-api-host',
-        metavar='<host>',
-        required=False,
-        help='Miner API host')
-    miner_parser.add_argument(
-        '-P', '--miner-api-port',
-        metavar='<port>',
-        type=int,
-        required=False,
-        help='Miner API port')
+    miner_parser.add_argument('-H', '--miner-api-host', metavar='<host>', required=False, help='Miner API host')
+    miner_parser.add_argument('-P', '--miner-api-port', metavar='<port>', type=int, required=False, help='Miner API port')
 
     args = parser.parse_args()
+
+    if len(tuple(filter(None.__ne__, (args.pool, args.pool_api_host, args.pool_api_miner)))) not in (0, 3):
+        parser.error('--pool requires --pool-api-host and --pool-api-miner.')
     if len(tuple(filter(None.__ne__, (args.miner, args.miner_api_host, args.miner_api_port)))) not in (0, 3):
-        parser.error('--miner requires --miner_api_host and --miner_api_port.')
+        parser.error('--miner requires --miner-api-host and --miner-api-port.')
 
     return vars(args)
+
+
+def pool_collectors() -> Dict:
+    return {
+        'flypool': FlyPoolCollector
+    }
 
 
 def miner_collectors() -> Dict:
@@ -166,10 +213,16 @@ def miner_collectors() -> Dict:
 
 def main():
     args = parse_args()
+    pool_collector = None
 
+    urllib3.disable_warnings()
     nvml.nvmlInit()
     atexit.register(nvml.nvmlShutdown)
     REGISTRY.register(NvidiaCollector())
+    if args['pool'] is not None:
+        pool_collector = pool_collectors()[args['pool'].lower()](args['pool_api_host'], args['pool_api_miner'])
+        pool_collector.query_pool()
+        REGISTRY.register(pool_collector)
     if args['miner'] is not None:
         REGISTRY.register(miner_collectors()[args['miner'].lower()](args['miner_api_host'], args['miner_api_port']))
 
@@ -177,7 +230,9 @@ def main():
     try:
         start_http_server(args['port'])
         while True:
-            time.sleep(1)
+            time.sleep(60)  # 1 query per minute so we don't reach API request limits
+            if pool_collector is not None:
+                pool_collector.query_pool()
     except KeyboardInterrupt:
         print('Exiting...')
         exit(0)
