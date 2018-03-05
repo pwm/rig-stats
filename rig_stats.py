@@ -15,13 +15,13 @@ import urllib3
 
 
 class NvidiaCollector(object):
-
     @staticmethod
-    def call(fn, handle, arg=None):
+    def call(nvml_getter_name, handle, arg=None):
         try:
-            return getattr(nvml, fn)(handle) if arg is None else getattr(nvml, fn)(handle, arg)
+            f = getattr(nvml, 'nvmlDeviceGet' + nvml_getter_name)
+            return f(handle) if arg is None else f(handle, arg)
         except nvml.NVMLError:
-            return 0
+            return 0.0
 
     @staticmethod
     def collect() -> Generator:
@@ -37,37 +37,37 @@ class NvidiaCollector(object):
         for (i, handle) in gpu_handles:
             gpu_id = nvml.nvmlDeviceGetUUID(handle)
             # GPU Utilization
-            nvml_gpu_utilization = NvidiaCollector.call('nvmlDeviceGetUtilizationRates', handle)
+            nvml_gpu_utilization = NvidiaCollector.call('UtilizationRates', handle)
             gpu_utilization.add_metric([gpu_id, 'gpu'], nvml_gpu_utilization.gpu)
             gpu_utilization.add_metric([gpu_id, 'memory'], nvml_gpu_utilization.memory)
             # Clock Speed
-            clock_speed.add_metric([gpu_id, 'core'], NvidiaCollector.call('nvmlDeviceGetClockInfo', handle, nvml.NVML_CLOCK_COUNT))
-            clock_speed.add_metric([gpu_id, 'memory'], NvidiaCollector.call('nvmlDeviceGetClockInfo', handle, nvml.NVML_CLOCK_MEM))
-            clock_speed.add_metric([gpu_id, 'max_core'], NvidiaCollector.call('nvmlDeviceGetMaxClockInfo', handle, nvml.NVML_CLOCK_COUNT))
-            clock_speed.add_metric([gpu_id, 'max_memory'], NvidiaCollector.call('nvmlDeviceGetMaxClockInfo', handle, nvml.NVML_CLOCK_MEM))
+            clock_speed.add_metric([gpu_id, 'core'], NvidiaCollector.call('ClockInfo', handle, nvml.NVML_CLOCK_COUNT))
+            clock_speed.add_metric([gpu_id, 'memory'], NvidiaCollector.call('ClockInfo', handle, nvml.NVML_CLOCK_MEM))
+            clock_speed.add_metric([gpu_id, 'max_core'], NvidiaCollector.call('MaxClockInfo', handle, nvml.NVML_CLOCK_COUNT))
+            clock_speed.add_metric([gpu_id, 'max_memory'], NvidiaCollector.call('MaxClockInfo', handle, nvml.NVML_CLOCK_MEM))
             # Power Usage
-            power_usage.add_metric([gpu_id, 'usage'], NvidiaCollector.call('nvmlDeviceGetPowerUsage', handle))
-            power_usage.add_metric([gpu_id, 'min_limit'], NvidiaCollector.call('nvmlDeviceGetPowerManagementLimitConstraints', handle)[0])
-            power_usage.add_metric([gpu_id, 'max_limit'], NvidiaCollector.call('nvmlDeviceGetPowerManagementLimitConstraints', handle)[1])
-            power_usage.add_metric([gpu_id, 'limit'], NvidiaCollector.call('nvmlDeviceGetPowerManagementLimit', handle))
-            power_usage.add_metric([gpu_id, 'default_limit'], NvidiaCollector.call('nvmlDeviceGetPowerManagementDefaultLimit', handle))
-            power_usage.add_metric([gpu_id, 'enforced_limit'], NvidiaCollector.call('nvmlDeviceGetEnforcedPowerLimit', handle))
+            power_usage.add_metric([gpu_id, 'usage'], NvidiaCollector.call('PowerUsage', handle))
+            power_usage.add_metric([gpu_id, 'min_limit'], NvidiaCollector.call('PowerManagementLimitConstraints', handle)[0])
+            power_usage.add_metric([gpu_id, 'max_limit'], NvidiaCollector.call('PowerManagementLimitConstraints', handle)[1])
+            power_usage.add_metric([gpu_id, 'limit'], NvidiaCollector.call('PowerManagementLimit', handle))
+            power_usage.add_metric([gpu_id, 'default_limit'], NvidiaCollector.call('PowerManagementDefaultLimit', handle))
+            power_usage.add_metric([gpu_id, 'enforced_limit'], NvidiaCollector.call('EnforcedPowerLimit', handle))
             # Memory Usage
-            nvml_memory_usage = NvidiaCollector.call('nvmlDeviceGetMemoryInfo', handle)
+            nvml_memory_usage = NvidiaCollector.call('MemoryInfo', handle)
             memory_usage.add_metric([gpu_id, 'used'], nvml_memory_usage.used)
             memory_usage.add_metric([gpu_id, 'free'], nvml_memory_usage.free)
             memory_usage.add_metric([gpu_id, 'total'], nvml_memory_usage.total)
             # BAR1 Memory Usage
-            nvml_bar1_memory_usage = NvidiaCollector.call('nvmlDeviceGetBAR1MemoryInfo', handle)
+            nvml_bar1_memory_usage = NvidiaCollector.call('BAR1MemoryInfo', handle)
             bar1_memory_usage.add_metric([gpu_id, 'used'], nvml_bar1_memory_usage.bar1Used)
             bar1_memory_usage.add_metric([gpu_id, 'free'], nvml_bar1_memory_usage.bar1Free)
             bar1_memory_usage.add_metric([gpu_id, 'total'], nvml_bar1_memory_usage.bar1Total)
             # Temperature
-            temperature.add_metric([gpu_id, 'current'], NvidiaCollector.call('nvmlDeviceGetTemperature', handle, nvml.NVML_TEMPERATURE_GPU))
-            temperature.add_metric([gpu_id, 'slowdown_threshold'], NvidiaCollector.call('nvmlDeviceGetTemperatureThreshold', handle, nvml.NVML_TEMPERATURE_THRESHOLD_SLOWDOWN))
-            temperature.add_metric([gpu_id, 'shutdown_threshold'], NvidiaCollector.call('nvmlDeviceGetTemperatureThreshold', handle, nvml.NVML_TEMPERATURE_THRESHOLD_SHUTDOWN))
+            temperature.add_metric([gpu_id, 'current'], NvidiaCollector.call('Temperature', handle, nvml.NVML_TEMPERATURE_GPU))
+            temperature.add_metric([gpu_id, 'slowdown_threshold'], NvidiaCollector.call('TemperatureThreshold', handle, nvml.NVML_TEMPERATURE_THRESHOLD_SLOWDOWN))
+            temperature.add_metric([gpu_id, 'shutdown_threshold'], NvidiaCollector.call('TemperatureThreshold', handle, nvml.NVML_TEMPERATURE_THRESHOLD_SHUTDOWN))
             # Fan Speed
-            fan_speed.add_metric([gpu_id], nvml.nvmlDeviceGetFanSpeed(handle))
+            fan_speed.add_metric([gpu_id], NvidiaCollector.call('FanSpeed', handle))
 
         yield gpu_utilization
         yield clock_speed
@@ -89,16 +89,17 @@ class FlyPoolCollector(object):
         shares = GaugeMetricFamily('pool_shares', 'Hashrate', labels=['type'])
         earnings = GaugeMetricFamily('pool_earnings', 'Hashrate', labels=['type'])
 
-        hashrate.add_metric(['current'], self.data['data']['currentHashrate'])
-        hashrate.add_metric(['average'], self.data['data']['averageHashrate'])
-        shares.add_metric(['valid'], self.data['data']['validShares'])
-        shares.add_metric(['invalid'], self.data['data']['invalidShares'])
-        shares.add_metric(['stale'], self.data['data']['staleShares'])
-        earnings.add_metric(['unconfirmed'], self.data['data']['unconfirmed'])
-        earnings.add_metric(['unpaid'], self.data['data']['unpaid'])
-        earnings.add_metric(['coins_per_min'], self.data['data']['coinsPerMin'])
-        earnings.add_metric(['btc_per_min'], self.data['data']['btcPerMin'])
-        earnings.add_metric(['usd_per_min'], self.data['data']['usdPerMin'])
+        data = self.data.get('data', {})
+        hashrate.add_metric(['current'], data.get('currentHashrate', 0.0))
+        hashrate.add_metric(['average'], data.get('averageHashrate', 0.0))
+        shares.add_metric(['valid'], data.get('validShares', 0.0))
+        shares.add_metric(['invalid'], data.get('invalidShares', 0.0))
+        shares.add_metric(['stale'], data.get('staleShares', 0.0))
+        earnings.add_metric(['unconfirmed'], data.get('unconfirmed', 0.0))
+        earnings.add_metric(['unpaid'], data.get('unpaid', 0.0))
+        earnings.add_metric(['coins_per_min'], data.get('coinsPerMin', 0.0))
+        earnings.add_metric(['btc_per_min'], data.get('btcPerMin', 0.0))
+        earnings.add_metric(['usd_per_min'], data.get('usdPerMin', 0.0))
 
         yield hashrate
         yield shares
@@ -125,11 +126,11 @@ class DSTMCollector(object):
         latency = GaugeMetricFamily('miner_latency', 'Latency', labels=['gpu_id'])
         uptime = GaugeMetricFamily('miner_uptime', 'Uptime', labels=['type'])
 
-        miner_data = DSTMCollector.query_miner(self.host, self.port)
+        data = DSTMCollector.query_miner(self.host, self.port)
 
-        uptime.add_metric(['miner'], miner_data['uptime'])
-        uptime.add_metric(['connection'], miner_data['contime'])
-        for gpu in miner_data['result']:
+        uptime.add_metric(['miner'], data['uptime'])
+        uptime.add_metric(['connection'], data['contime'])
+        for gpu in data['result']:
             gpu_id = gpu['gpu_uuid']
             hashrate.add_metric([gpu_id, 'current'], gpu['sol_ps'])
             hashrate.add_metric([gpu_id, 'average'], gpu['avg_sol_ps'])
@@ -152,6 +153,44 @@ class DSTMCollector(object):
             s.sendall(b'{"id": 1, "method": "getstat"}')
             rsp = s.recv(8192)  # todo: handle when rsp is larger
         return json.loads(rsp.decode('utf-8').rstrip())
+
+
+class BMinerCollector(object):
+    def __init__(self, host: str, port: int):
+        self.host = host
+        self.port = port
+
+    def collect(self) -> Generator:
+        hashrate = GaugeMetricFamily('miner_hashrate', 'Hashrate', labels=['gpu_id', 'type'])
+        efficiency = GaugeMetricFamily('miner_efficiency', 'Efficiency', labels=['gpu_id', 'type'])
+        pool_shares = GaugeMetricFamily('miner_pool_shares', 'Pool Shares', labels=['type'])
+        uptime = GaugeMetricFamily('miner_uptime', 'Uptime', labels=['type'])
+
+        data = BMinerCollector.query_miner(self.host, self.port)
+
+        uptime.add_metric(['miner'], int(time.time()) - data['start_time'])
+        uptime.add_metric(['connection'], 0)
+        pool_shares.add_metric(['accepted'], data['stratum']['accepted_shares'])
+        pool_shares.add_metric(['rejected'], data['stratum']['rejected_shares'])
+        for key, gpu in data['miners'].items():
+            # setting CUDA_DEVICE_ORDER=PCI_BUS_ID env var is a must otherwise cuda id and bminer id are different!
+            gpu_id = nvml.nvmlDeviceGetUUID(nvml.nvmlDeviceGetHandleByIndex(int(key)))
+            hashrate.add_metric([gpu_id, 'current'], gpu['solver']['solution_rate'])
+            efficiency.add_metric([gpu_id, 'current'], round(gpu['solver']['solution_rate'] / gpu['device']['power'], 2))
+
+        yield uptime
+        yield hashrate
+        yield efficiency
+        yield pool_shares
+
+    @staticmethod
+    def query_miner(host: str, port: int) -> Dict:
+        url = "http://{host}:{port}/api/status".format(host=host, port=port)
+        try:
+            rsp = urllib3.PoolManager().request('GET', url, retries=False)
+            return json.loads(rsp.data.decode('utf-8'))
+        except urllib3.exceptions.NewConnectionError:
+            return {}  # todo: handle empty dict in collect()
 
 
 def parse_args() -> Dict:
@@ -189,11 +228,12 @@ def parse_args() -> Dict:
         '-m', '--miner',
         metavar='<name>',
         required=False,
-        choices=['dstm'],
+        choices=['dstm', 'bminer'],
         help=textwrap.dedent('''\
             The miner software, in case miner stats are to be collected.
             Currently supported:
-              - dstm'''))
+              - dstm
+              - bminer'''))
     miner_parser.add_argument('-H', '--miner-api-host', metavar='<host>', required=False, help='Miner API host')
     miner_parser.add_argument('-P', '--miner-api-port', metavar='<port>', type=int, required=False, help='Miner API port')
 
@@ -215,7 +255,8 @@ def pool_collectors() -> Dict:
 
 def miner_collectors() -> Dict:
     return {
-        'dstm': DSTMCollector
+        'dstm': DSTMCollector,
+        'bminer': BMinerCollector,
     }
 
 
