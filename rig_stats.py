@@ -90,16 +90,17 @@ class FlyPoolCollector(object):
         earnings = GaugeMetricFamily('pool_earnings', 'Hashrate', labels=['type'])
 
         data = self.data.get('data', {})
-        hashrate.add_metric(['current'], data.get('currentHashrate', 0.0))
-        hashrate.add_metric(['average'], data.get('averageHashrate', 0.0))
-        shares.add_metric(['valid'], data.get('validShares', 0.0))
-        shares.add_metric(['invalid'], data.get('invalidShares', 0.0))
-        shares.add_metric(['stale'], data.get('staleShares', 0.0))
-        earnings.add_metric(['unconfirmed'], data.get('unconfirmed', 0.0))
-        earnings.add_metric(['unpaid'], data.get('unpaid', 0.0))
-        earnings.add_metric(['coins_per_min'], data.get('coinsPerMin', 0.0))
-        earnings.add_metric(['btc_per_min'], data.get('btcPerMin', 0.0))
-        earnings.add_metric(['usd_per_min'], data.get('usdPerMin', 0.0))
+
+        hashrate.add_metric(['current'], data['currentHashrate'] if data['currentHashrate'] is not None else 0.0)
+        hashrate.add_metric(['average'], data['averageHashrate'] if data['averageHashrate'] is not None else 0.0)
+        shares.add_metric(['valid'], data['validShares'] if data['validShares'] is not None else 0.0)
+        shares.add_metric(['invalid'], data['invalidShares'] if data['invalidShares'] is not None else 0.0)
+        shares.add_metric(['stale'], data['staleShares'] if data['staleShares'] is not None else 0.0)
+        earnings.add_metric(['unconfirmed'], data['unconfirmed'] if data['unconfirmed'] is not None else 0.0)
+        earnings.add_metric(['unpaid'], data['unpaid'] if data['unpaid'] is not None else 0.0)
+        earnings.add_metric(['coins_per_min'], data['coinsPerMin'] if data['coinsPerMin'] is not None else 0.0)
+        earnings.add_metric(['btc_per_min'], data['btcPerMin'] if data['btcPerMin'] is not None else 0.0)
+        earnings.add_metric(['usd_per_min'], data['usdPerMin'] if data['usdPerMin'] is not None else 0.0)
 
         yield hashrate
         yield shares
